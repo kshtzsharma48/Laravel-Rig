@@ -28,7 +28,10 @@ class Rig_Generate_Task{
 		// Let's check if a package has been set and enabled.
 		foreach( Config::get('rig::packages') as $name => $config)
 		{
-			$config['class']::run($arguments);
+			if($config['enabled'] === true)
+			{
+				$config['class']::run($arguments);
+			}
 		}
 
 		$this->help($arguments);
