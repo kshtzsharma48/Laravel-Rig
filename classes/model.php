@@ -26,9 +26,16 @@ class Model{
 		// Let's split the arguments up into a readable format.
 		self::arguments($arguments);
 
-		// Now check for the flag.
-		// If the flag is equal to "-n", it will create a new model.
-		// If the flag is equal to "-r" it will create relationships
+		// Next we need to generate the migrations.
+		if(isset(self::$model['flags']['-c']))
+		{
+			Migration::generate(self::$model['name'], self::$model['flags']['-c']);
+		}
+
+		if(isset(self::$model['flags']['-r']))
+		{
+			self::relationships();
+		}
 
 	}
 
@@ -106,6 +113,19 @@ class Model{
 		}
 
 		print_r(self::$model['flags']);
+
+	}
+
+
+	public function relationships()
+	{
+
+
+
+	}
+
+	public function model()
+	{
 
 	}
 

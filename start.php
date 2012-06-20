@@ -12,6 +12,7 @@ Autoloader::map(array(
 	'Model'			=> __DIR__ . '/classes/model.php',
 	'Controller'	=> __DIR__ . '/classes/controller.php',
 	'View'			=> __DIR__ . '/classes/view.php',
+	'Migration'		=> __DIR__ . '/classes/migration.php',
 
 	'Admin'			=> __DIR__ . '/classes/admin/admin.php',
 
