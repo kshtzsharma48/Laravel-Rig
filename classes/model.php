@@ -4,14 +4,15 @@ namespace Rig;
 
 class Model{
 
-	public static $orm;
 	public static $template;
 
 	public static $model = array(
-		'name' 			=> '',
-		'orm'			=> '',
-		'timestamp'	    => '',
-		'relationships' => '',
+		'flags'			=> array(),
+		'name' 			=> null,
+		'args'			=> array(),
+		'orm'			=> null,
+		'timestamp'	    => null,
+		'relationships' => array(),
 	);
 
 	public static function run($arguments)
@@ -24,12 +25,18 @@ class Model{
 
 		// Let's split the arguments up into a readable format.
 		self::arguments($arguments);
+
+		// Now check for the flag.
+		// If the flag is equal to "-n", it will create a new model.
+		// If the flag is equal to "-r" it will create relationships
+
 	}
 
 	public static function orm()
 	{
-		$tmp 	   = \Config::get('rig::model.orm');
-		self::$orm = (!empty($tmp)) ?: 'eloquent';
+		$tmp 	   		    = \Config::get('rig::model.orm');
+		self::$model['orm'] = (!empty($tmp)) ?: 'eloquent';
+		unset($tmp);
 	}
 
 	public static function template()
@@ -59,10 +66,47 @@ class Model{
 		// Now let's split the first element from the array.
 		array_splice($arguments, 0, 1);
 
-		foreach($arguments as $name)
+		self::$model['args']	= $arguments;
+
+		foreach($arguments as $arg)
 		{
-			echo $name;
+			// We first need to check if there is a flag (i.e "-f")
+			// If theres a flag we need to group the next set of arguments within that flag until theres a new flag.
+			// -c = set some columns
+			// -r = set some relationships.
+			if(substr(trim($arg), 0, 1) === '-')
+			{
+				// Now that we have found a new flag we need to store it.
+				if(isset(self::$model['flags'][$arg]))
+				{
+					// Instead of array_merge, we need to take that index and move it to the end so that any paramters within that flag
+					// will be grouped together.
+					$index = self::$model['flags'][$arg];
+					// Next we want to delete that item;
+					unset(self::$model['flags'][$arg]);
+					// Next let's add the old index to the end of the newly normalized array.
+					self::$model['flags'][$arg]	= $index;
+					//self::$model['flags'][$arg] = array_merge($arg, self::$model['flags'][$arg]);
+				}
+				else
+				{	
+					self::$model['flags'][$arg] = array();
+				}
+			}
+			else
+			{
+				end(self::$model['flags']);
+				$key = key(self::$model['flags']);
+				// Store the next set of arguments to the lastest flag found.
+				if(isset(self::$model['flags'][$key]))
+				{
+					echo self::$model['flags'][$key][] = $arg;
+				}
+			}
 		}
+
+		print_r(self::$model['flags']);
+
 	}
 
 
